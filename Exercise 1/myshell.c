@@ -167,6 +167,7 @@ int main(int argc, char *args[]) {
     
     // Get args from command line
     char* path = parse_args(argc, args);
+    printf("PATH: %s\n", path);
     int res = setenv("PATH", path, 1);
     if (res != 0) {
         perror("Failed to set PATH");

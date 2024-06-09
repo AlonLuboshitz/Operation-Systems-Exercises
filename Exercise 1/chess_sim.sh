@@ -66,12 +66,12 @@ start_board () {
 }
 
 print_board () {
-    echo " a b c d e f g h"
+    echo "  a b c d e f g h"
     for j in {0..7}; do
     row=$((8-$j))
     echo "$row ${board[@]:j*8:8} $row"
     done
-    echo " a b c d e f g h"
+    echo "  a b c d e f g h"
     
    
 }
@@ -153,7 +153,7 @@ go_back () {
     done
 }
 print_options () {
-    echo -n "Press 'd' to move forward, 'a' to move back, 'w' to go to the start, 's' to go to the end, 'q' to quit: "
+    echo -n "Press 'd' to move forward, 'a' to move back, 'w' to go to the start, 's' to go to the end, 'q' to quit:"
 }
 print_game () {
     echo "Move $current_move/$total_moves"
@@ -167,7 +167,8 @@ exit_game () {
 game () {
     while true; do
     print_options
-    read -n 1 -p "" input
+    read input
+    
     if [[ $input == "d" ]]; then
         echo
         if [ $current_move -eq $total_moves ]; then
