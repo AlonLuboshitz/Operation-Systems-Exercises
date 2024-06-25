@@ -54,7 +54,7 @@ To implement a synchronization lock for file access, ensuring that only one proc
 1. **Example Input:**
 
    ```bash
-   ./part2 "First message" "Second message" "Third message" "1 3 2" 3 > output2.txt
+   ./part2 "First message" "Second message" "Third message" 3 > output2.txt
    ```
 
 2. **Expected Output in `output2.txt`:**
@@ -75,11 +75,11 @@ To implement a synchronization lock for file access, ensuring that only one proc
 
 **Command-Line Argument Handling:**
 
-Ensure the program accepts the necessary arguments for the messages, the order of writing, and the count of writes.
+Ensure the program accepts the necessary arguments for the messages(at least 3 messages), and the count of writes.
 
 ```c
-if (argc < 6) {
-    fprintf(stderr, "Usage: %s <message1> <message2> ... <order> <count>
+if (argc <= 4) {
+    fprintf(stderr, "Usage: %s <message1> <message2> ... <count>
 ", argv[0]);
     return 1;
 }
@@ -96,7 +96,7 @@ You will use the provided `write_message` function to handle the printing with r
 ```c
 void write_message(const char *message, int count) {
     for (int i = 0; i < count; i++) {
-        printf("%s", message);
+        printf("%s\n", message);
         usleep((rand() % 100) * 1000); // Random delay between 0 and 99 milliseconds
     }
 }
