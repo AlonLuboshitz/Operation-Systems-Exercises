@@ -233,8 +233,8 @@ void copy_directory(const char *src, const char *dest, int copy_symlinks, int co
 
 
 
-
+/*
 int main() {
     copy_directory("/home/alon/Op_sys/Operation-Systems-Exercises-1/Exercise 2/source_directory", "destination_directory", 1, 0);
     return 0;
-}
+}*/

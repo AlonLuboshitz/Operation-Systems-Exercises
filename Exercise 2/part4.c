@@ -15,7 +15,19 @@ int main(int argc, char *argv[]) {
     int copy_permissions = 0;
 
     // HANDLE THE FLAGS HERE
-
+    while ((opt = getopt(argc, argv, "-l-p")) != -1) {
+        switch (opt) {
+            case '-l':
+                copy_symlinks = 1;
+                break;
+            case '-p':
+                copy_permissions = 1;
+                break;
+            default: /* '?' */
+                print_usage(argv[0]);
+                return EXIT_FAILURE;
+        }
+    }
     if (optind + 2 != argc) {
         print_usage(argv[0]);
         return EXIT_FAILURE;
