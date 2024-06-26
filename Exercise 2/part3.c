@@ -8,6 +8,7 @@
 
 
 void add_pos_to_read_buff(buffered_file_t *bf, int count) {
+    if (bf->read_buffer_pos != 0) {
     if (bf->read_buffer_pos + count < bf->read_buffer_size) {
         bf->read_buffer_pos += count;
     }
@@ -15,6 +16,7 @@ void add_pos_to_read_buff(buffered_file_t *bf, int count) {
         memset(bf->read_buffer, 0, bf->read_buffer_size);
         bf->read_buffer_pos = 0;
     }
+}
 }
 
 buffered_file_t *buffered_open(const char *pathname, int flags, ...) {
@@ -133,7 +135,7 @@ ssize_t buffered_write(buffered_file_t *bf, const void *buf, size_t count){
                 if (count == 0) {
                     return remaining;
                 }
-                buffered_write(bf, buf, count);
+                return (remaining+buffered_write(bf, buf, count));
             }
         }
    }
@@ -269,7 +271,7 @@ ssize_t buffered_read(buffered_file_t *bf, void *buf, size_t count) {
         bf->read_buffer_pos = 0;
         int remaining = count - bytes_read;
         // Read the remaining bytes from the file
-        buffered_read(bf, buf+bytes_read, remaining);
+        return (bytes_read + buffered_read(bf, buf+bytes_read, remaining));
         }
     }
 
@@ -293,7 +295,7 @@ int buffered_close(buffered_file_t *bf) {
 
 }
 int main() { 
-    buffered_file_t *bf = buffered_open("example.txt", O_RDWR | O_CREAT | O_PREAPPEND , 0644);
+    buffered_file_t *bf = buffered_open("example.txt", O_RDWR | O_CREAT  , 0644);
     if (!bf) {
         perror("buffered_open");
         return 1;
@@ -303,8 +305,8 @@ int main() {
     // ssize_t = write(fd, "Hel", 3);
     // ssize_t = write(fd, "righ", 4);
     char buf[8];
-    int ssize_t = buffered_write(bf, "Hello", 5);
-    ssize_t = buffered_read(bf, buf, 7);
+    //int ssize_t = buffered_write(bf, "Hello1234", 9);
+    int ssize_t = buffered_read(bf, buf, 7);
     if (buffered_close(bf) == -1) {
         perror("buffered_close");
         return 1;
