@@ -14,7 +14,9 @@ int parse_args(int argc,char* argv[],char* messages[],int* count) {
     // last argument is count
     *count = atoi(argv[argc-1]);
     for (int i= 1;i<argc-1;i++){
-        messages[i-1] = argv[i];
+        messages[i-1] = malloc(sizeof(char)* strlen(argv[i])+2);
+        strcpy(messages[i-1],argv[i]);
+        messages[i-1][strlen(argv[i])] = '\n';
        
     }
     
