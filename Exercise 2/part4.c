@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 void print_usage(const char *prog_name) {
     fprintf(stderr, "Usage: %s [-l] [-p] <source_directory> <destination_directory>", prog_name);
@@ -15,10 +16,10 @@ int main(int argc, char *argv[]) {
     int copy_permissions = 0;
 
     // HANDLE THE FLAGS HERE
-   while ((opt = getopt(argc, argv, "-l-p")) != -1) {
-        if (opt == '-l') {
+   while ((opt = getopt(argc, argv, "lp")) != -1) {
+        if (opt == 'l') {
             copy_symlinks = 1;
-        } else if (opt == '-p') {
+        } else if (opt == 'p') {
             copy_permissions = 1;
         } else {
             print_usage(argv[0]);
