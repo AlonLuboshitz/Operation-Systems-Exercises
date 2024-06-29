@@ -128,7 +128,7 @@ To test your implementation, follow these steps:
    ```sh
    gcc -c copytree.c -o copytree.o
    ar rcs libcopytree.a copytree.o
-   gcc main.c -L. -lcopytree -o main_program
+   gcc part4.c -L. -lcopytree -o main_program
    ./main_program source_directory destination_directory
    ```
 
