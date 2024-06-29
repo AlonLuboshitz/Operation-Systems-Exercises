@@ -17,10 +17,10 @@ int main(int argc, char *argv[]) {
     // HANDLE THE FLAGS HERE
     while ((opt = getopt(argc, argv, "-l-p")) != -1) {
         switch (opt) {
-            case '-l':
+            case "-l":
                 copy_symlinks = 1;
                 break;
-            case '-p':
+            case "-p":
                 copy_permissions = 1;
                 break;
             default: /* '?' */
