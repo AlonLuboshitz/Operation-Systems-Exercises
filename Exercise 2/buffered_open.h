@@ -8,7 +8,7 @@
 #define O_PREAPPEND 0x40000000
 
 // Define the standard buffer size for read and write operations
-#define BUFFER_SIZE 4
+#define BUFFER_SIZE 4096
 
 // Structure to hold the buffer and original flags
 typedef struct {

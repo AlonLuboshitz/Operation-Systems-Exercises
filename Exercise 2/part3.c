@@ -300,13 +300,8 @@ int main() {
         perror("buffered_open");
         return 1;
     }
-    // int fd = open("example.txt", O_RDWR );
-    // int ssize_t = write(fd,"helo",4);
-    // ssize_t = write(fd, "Hel", 3);
-    // ssize_t = write(fd, "righ", 4);
-    char buf[8];
-    //int ssize_t = buffered_write(bf, "Hello1234", 9);
-    int ssize_t = buffered_read(bf, buf, 7);
+ 
+    
     if (buffered_close(bf) == -1) {
         perror("buffered_close");
         return 1;
