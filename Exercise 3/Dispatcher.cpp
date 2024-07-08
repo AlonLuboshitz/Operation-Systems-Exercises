@@ -1,12 +1,15 @@
 #include "Dispatcher.h"
 #include <iostream>
 #include <thread>
-Dispatcher::Dispatcher(Bounded_buffer** buffers, int buffers_amount) {
+Dispatcher::Dispatcher(Bounded_buffer** buffers, int buffers_amount,UnboundedBuffer** unbounded_buffers) {
     this->buffers = buffers;
     this->buffers_amount = buffers_amount;
     for (int i = 0; i < buffers_amount; i++) {
         this->active_buffers.push_back(i);
     }
+    this->news_que = unbounded_buffers[0];
+    this->sports_que = unbounded_buffers[1];
+    this->weather_que = unbounded_buffers[2];
 }
 Dispatcher::Dispatcher(const Dispatcher& other) {
     this->buffers = other.buffers;
@@ -27,29 +30,28 @@ void Dispatcher::read() {
             
         }
     }
-    for (long unsigned int i = 0; i < news_que.size(); i++) {
-        std::cout << news_que[i] << std::endl;
-    }
-    for (long unsigned int i = 0; i < sports_que.size(); i++) {
-        std::cout << sports_que[i] << std::endl;
-    }
-    for (long unsigned int i = 0; i < weather_que.size(); i++) {
-        std::cout << weather_que[i] << std::endl;
-    }
+    // All done messages have been received
+    this->push_done();
+   
     std::cout << "Dispatcher done" << std::endl;
 
+}
+void Dispatcher::push_done() {
+    this->news_que->insert("DONE");
+    this->sports_que->insert("DONE");
+    this->weather_que->insert("DONE");
 }
 void Dispatcher::add_to_que(std::string task, TYPE type, int buffer_index) {
     
     switch (type) {
         case SPORTS:
-            this->sports_que.push_back(task);
+            this->sports_que->insert(task);
             break;
         case NEWS:
-            this->news_que.push_back(task);
+            this->news_que->insert(task);
             break;
         case WEATHER:
-            this->weather_que.push_back(task);
+            this->weather_que->insert(task);
             break;
         case DONE:
             this->active_buffers.erase(active_buffers.begin() + buffer_index);

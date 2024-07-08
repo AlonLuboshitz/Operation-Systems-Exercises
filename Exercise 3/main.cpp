@@ -7,6 +7,9 @@
 #include "Bounded_buffer.h"
 #include "Producer.h"
 #include "Dispatcher.h"
+#include "Unbounded_buffer.h"
+#include "Coeditor.h"
+#include "Screen_manager.h"
 /*Function parse the config file into vectors of:
 Ids, Number of tasks, Que sizes*/
 void Parse_args(const std::string &filename, std::vector<int>& producer_ids,std::vector<int>& num_tasks, std::vector<int>& queue_sizes) {
@@ -45,62 +48,75 @@ void Parse_args(const std::string &filename, std::vector<int>& producer_ids,std:
             queue_sizes.push_back(queue_size);
 
             
+        }else if (line.find("Co-Editor queue size") != std::string::npos) {
+            int co_editor_queue_size;
+            size_t pos = line.find('=');
+            if (pos != std::string::npos) {
+                std::string size_str = line.substr(pos + 1);
+                co_editor_queue_size = std::stoi(size_str);
+                queue_sizes.push_back(co_editor_queue_size);
+            }
         }
     }
 
     file.close();
-    if (producer_ids.size() != num_tasks.size() || producer_ids.size() != queue_sizes.size()) {
+    if (producer_ids.size() != num_tasks.size() || producer_ids.size() != (queue_sizes.size()-1)) {
         std::cerr << "Error: Number of producer IDs, number of tasks, and number of queue sizes do not match." << std::endl;
         producer_ids.clear();
         num_tasks.clear();
         queue_sizes.clear();
     }
 }
-/*Function creates |Producers| + 1 (co-editors) Mutexes.
-Returns via vector of mutexes. */
-void create_mutexes(int num_mutexes,std::vector<pthread_mutex_t>& mutexes) {
-    for ( int i = 0; i < num_mutexes; i++) {
-        pthread_mutex_init(&mutexes[i], NULL);
-    }
-}
 
-void create_buffers(std::vector<int> queue_sizes,std::vector<Bounded_buffer>& buffers) {
-    for (long unsigned int i = 0; i < queue_sizes.size(); i++) {
-        buffers.push_back(Bounded_buffer(queue_sizes[i]));
-    }
-}
 
-void create_producers(std::vector<int> num_tasks, std::vector<int> producer_ids, std::vector<int> queue_sizes, std::vector<Bounded_buffer>& buffers,std::vector<Producer>& producers) {
-    for (long unsigned int i = 0; i < num_tasks.size(); i++) {
-        producers.push_back(Producer(num_tasks[i], producer_ids[i], queue_sizes[i], &buffers[i]));
-    }
-    
-}
 int main(int argc, char* argv[]) {
     std::vector<int> producers_ids, num_tasks, que_sizes;
-    Parse_args(argv[1],producers_ids,num_tasks,que_sizes); // Need to parse the co editor args
+    Parse_args(argv[1],producers_ids,num_tasks,que_sizes); 
     long unsigned int num_producers = producers_ids.size();
-    Bounded_buffer** buffers = new Bounded_buffer*[num_producers];
-    Producer** producers = new Producer*[num_producers];    
-    for (long unsigned int i = 0; i < num_producers; i++) {
+    Bounded_buffer** buffers = new Bounded_buffer*[num_producers]; // producer-dispatcher bound buffers array
+    Producer** producers = new Producer*[num_producers]; // producers array
+    UnboundedBuffer** co_editor_un_bounded_buffers = new UnboundedBuffer*[3]; // 3 unbounded buffers for the co editors
+    Coeditor** coeditors = new Coeditor*[3]; // 3 co-editors
+    Bounded_buffer* shared_buffer = new Bounded_buffer(que_sizes[num_producers]); // bound buffer co-editors-screen
+    std::vector<int>* done_que = new std::vector<int>();
+    for (int i = 0; i < 3; i++) { // init unbounded buffers and co editors
+        co_editor_un_bounded_buffers[i] = new UnboundedBuffer();
+        coeditors[i] = new Coeditor(co_editor_un_bounded_buffers[i],shared_buffer,done_que);
+    }
+    
+    Screen_manager* screen_manager = new Screen_manager(shared_buffer,done_que);
+    Dispatcher dispatcher(buffers, num_producers, co_editor_un_bounded_buffers); // init dispatcher
+    for (long unsigned int i = 0; i < num_producers; i++) { // init bounded buffers (pro-dis) and producers
         buffers[i] = new Bounded_buffer(que_sizes[i]);
         producers[i] = new Producer(num_tasks[i], producers_ids[i], que_sizes[i], buffers[i]);
     }
-    std::vector<std::thread> threads;
+    std::vector<std::thread> producers_threads;
     for (size_t i = 0; i < num_producers; i++) {
-        threads.emplace_back([producers, i]() {
+        producers_threads.emplace_back([producers, i]() {
             producers[i]->create_tasks();
         });
     }   
-    Dispatcher dispatcher(buffers, num_producers); 
     std::thread dispatcher_thread([&dispatcher]() {
         dispatcher.read();
     });
-    for (auto& thread : threads) {
+    std::vector<std::thread> coeditors_threads;
+    for (int i = 0; i < 3; i++) {
+        coeditors_threads.emplace_back([coeditors,i]() {
+            coeditors[i]->read_dispatcher_que();
+        });
+    }
+    std::thread screen_thread([&screen_manager]() {
+        screen_manager->run_screen();
+    });
+    for (auto& thread : producers_threads) {
         thread.join();
     }
     dispatcher_thread.join();
-
+    for (auto& thread : coeditors_threads) {
+        thread.join();
+    }
+    screen_thread.join();
+   
    
    
 return 0;}

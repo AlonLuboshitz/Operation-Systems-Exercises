@@ -34,12 +34,6 @@ int Bounded_buffer::insert(char * s)
 {   
     sem_wait(&empty);
     pthread_mutex_lock(&lock);
-    // if (this->current_place == this->size) {
-    //     pthread_mutex_unlock(&lock);
-    //     sem_post(&full);
-    //     return -1;
-    // }
-    // copy chr into buffer
     
     char* temp = new char[strlen(s) + 1];
     strcpy(temp, s);
@@ -53,11 +47,7 @@ char * Bounded_buffer::remove()
 {
     sem_wait(&full);
      pthread_mutex_lock(&lock);
-    //    if (this->current_place == 0) {
-    //     pthread_mutex_unlock(&lock);
-    //     sem_post(&empty);
-    //     return nullptr;
-    // }
+    
     char* temp = this->buffer[0]; // Get the first element
     
     
