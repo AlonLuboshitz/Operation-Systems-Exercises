@@ -20,7 +20,7 @@ std::string Producer::produce() {
 }
 
 void Producer::create_tasks() {
-    std::cout<<"Producer Tid: "<<std::this_thread::get_id()<<std::endl;
+    //std::cout<<"Producer Tid: "<<std::this_thread::get_id()<<std::endl;
     while (this->num_tasks_completed != this->num_tasks) {
         std::string task = produce();
         //std::cout << task << std::endl;

@@ -21,11 +21,9 @@ public:
     Bounded_buffer(int size);
     Bounded_buffer(const Bounded_buffer& other);
     ~Bounded_buffer();
-    //int insert (char * s);
     int insert (std::string s);
     std::string remove();
-    //char * remove ();
-    //void update_que();
+    
 };
 
 

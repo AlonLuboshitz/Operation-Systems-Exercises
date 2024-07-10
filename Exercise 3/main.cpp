@@ -70,6 +70,10 @@ void Parse_args(const std::string &filename, std::vector<int>& producer_ids,std:
 
 
 int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <config_file>" << std::endl;
+        return 1;
+    }
     std::vector<int> producers_ids, num_tasks, que_sizes;
     Parse_args(argv[1],producers_ids,num_tasks,que_sizes); 
     long unsigned int num_producers = producers_ids.size();

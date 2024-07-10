@@ -17,9 +17,9 @@ Dispatcher::Dispatcher(const Dispatcher& other) {
 }
 void Dispatcher::read() {
     //Thread wait for message
-    std::cout<<"Dispatcher Tid: "<<std::this_thread::get_id()<<std::endl;
+    //std::cout<<"Dispatcher Tid: "<<std::this_thread::get_id()<<std::endl;
     while (this->buffers_amount > 0) {
-        for (int i =0;i<active_buffers.size();i++) {
+        for (long unsigned int i =0;i<active_buffers.size();i++) {
             int buffer_index = active_buffers[i];
             // char* message = wait_for_message(buffers[buffer_index]);
             // std::string message_str(message);
@@ -34,7 +34,7 @@ void Dispatcher::read() {
     // All done messages have been received
     this->push_done();
    
-    std::cout << "Dispatcher done" << std::endl;
+    //std::cout << "Dispatcher done" << std::endl;
 
 }
 void Dispatcher::push_done() {

@@ -17,7 +17,7 @@ void Screen_manager::run_screen(){
     {
         //char* message = this->shared_que->remove();
         std::string message = this->shared_que->remove();        
-        std::cout<< message << " "<< std::this_thread::get_id()<<std::endl;
+        std::cout<< message <<std::endl;
     }
     std::cout<<"DONE"<<std::endl;
 }
