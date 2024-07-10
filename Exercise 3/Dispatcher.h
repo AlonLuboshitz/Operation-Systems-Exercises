@@ -21,7 +21,8 @@ class Dispatcher{
         UnboundedBuffer* weather_que;
         void push_done();
         void add_to_que(std::string task, TYPE type, int buffer_index);
-        char * wait_for_message(Bounded_buffer* buffer);
+        //char * wait_for_message(Bounded_buffer* buffer);
+        std::string wait_for_message(Bounded_buffer* buffer);
         
     public:
         Dispatcher(Bounded_buffer** buffers, int buffers_amount,UnboundedBuffer** unbounded_buffers);

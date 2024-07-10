@@ -21,12 +21,13 @@ void Dispatcher::read() {
     while (this->buffers_amount > 0) {
         for (int i =0;i<active_buffers.size();i++) {
             int buffer_index = active_buffers[i];
-            char* message = wait_for_message(buffers[buffer_index]);
-            std::string message_str(message);
+            // char* message = wait_for_message(buffers[buffer_index]);
+            // std::string message_str(message);
             
+            std::string message_str = wait_for_message(buffers[buffer_index]);
             TYPE type = stringToType(message_str);
             add_to_que(message_str, type,i);
-            buffers[i]->update_que();
+            //buffers[i]->update_que();
             
         }
     }
@@ -58,11 +59,20 @@ void Dispatcher::add_to_que(std::string task, TYPE type, int buffer_index) {
             buffers_amount--; // Decrement the count since we removed one buffer
     }
 }
-char * Dispatcher::wait_for_message(Bounded_buffer* buffer) {
+// char * Dispatcher::wait_for_message(Bounded_buffer* buffer) {
+//     while (true) {
+//         char* message = buffer->remove();
+//         if (message != nullptr) {
+//             return message;
+//         }
+//     }
+// }
+std::string Dispatcher::wait_for_message(Bounded_buffer* buffer) {
     while (true) {
-        char* message = buffer->remove();
-        if (message != nullptr) {
+        std::string message = buffer->remove();
+        if (!message.empty() ) {
             return message;
         }
     }
 }
+

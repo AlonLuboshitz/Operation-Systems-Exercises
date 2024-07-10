@@ -9,3 +9,5 @@ queue size = 2
 PRODUCER 1
 3
 queue size = 2
+
+Co-Editor queue size = 17

@@ -30,36 +30,61 @@ Bounded_buffer::Bounded_buffer(const Bounded_buffer& other) : size(other.size) {
         sem_init(&full, 0, current_place);
 
     }
-int Bounded_buffer::insert(char * s)
+// int Bounded_buffer::insert(char * s)
+// {   
+//     sem_wait(&empty);
+//     pthread_mutex_lock(&lock);
+    
+//     char* temp = new char[strlen(s) + 1];
+//     strcpy(temp, s);
+//     this->buffer[this->current_place] = temp;
+//     this->current_place++;
+//     pthread_mutex_unlock(&lock);
+//     sem_post(&full);
+//     return 0;
+// }
+// char * Bounded_buffer::remove()
+// {
+//     sem_wait(&full);
+//      pthread_mutex_lock(&lock);
+    
+//     char* temp = this->buffer[0]; // Get the first element
+//     this->update_que();
+    
+//     pthread_mutex_unlock(&lock);
+//     sem_post(&empty);
+//     return temp;
+// }
+// void Bounded_buffer::update_que() {
+//     //pthread_mutex_lock(&lock);
+//     for (int i = 0; i < this->current_place-1; i++) {
+//         strcpy(this->buffer[i], this->buffer[i + 1]);
+//     }
+//     this->current_place--;
+//    // pthread_mutex_unlock(&lock);
+// }
+
+int Bounded_buffer::insert(std::string s)
 {   
     sem_wait(&empty);
     pthread_mutex_lock(&lock);
     
-    char* temp = new char[strlen(s) + 1];
-    strcpy(temp, s);
-    this->buffer[this->current_place] = temp;
-    this->current_place++;
+    this->buffer_strings.push(s);
     pthread_mutex_unlock(&lock);
     sem_post(&full);
     return 0;
 }
-char * Bounded_buffer::remove()
-{
+std::string Bounded_buffer::remove() {
+    
     sem_wait(&full);
      pthread_mutex_lock(&lock);
     
-    char* temp = this->buffer[0]; // Get the first element
+   std::string temp = this->buffer_strings.front(); // Get the first element
+    this->buffer_strings.pop();
     
     
     pthread_mutex_unlock(&lock);
     sem_post(&empty);
     return temp;
-}
-void Bounded_buffer::update_que() {
-    pthread_mutex_lock(&lock);
-    for (int i = 0; i < this->current_place-1; i++) {
-        strcpy(this->buffer[i], this->buffer[i + 1]);
-    }
-    this->current_place--;
-    pthread_mutex_unlock(&lock);
+
 }

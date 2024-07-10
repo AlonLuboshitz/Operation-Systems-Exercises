@@ -90,14 +90,8 @@ int main(int argc, char* argv[]) {
         buffers[i] = new Bounded_buffer(que_sizes[i]);
         producers[i] = new Producer(num_tasks[i], producers_ids[i], que_sizes[i], buffers[i]);
     }
-    std::vector<std::thread> producers_threads;
-    for (size_t i = 0; i < num_producers; i++) {
-        producers_threads.emplace_back([producers, i]() {
-            producers[i]->create_tasks();
-        });
-    }   
-    std::thread dispatcher_thread([&dispatcher]() {
-        dispatcher.read();
+     std::thread screen_thread([&screen_manager]() {
+        screen_manager->run_screen();
     });
     std::vector<std::thread> coeditors_threads;
     for (int i = 0; i < 3; i++) {
@@ -105,9 +99,18 @@ int main(int argc, char* argv[]) {
             coeditors[i]->read_dispatcher_que();
         });
     }
-    std::thread screen_thread([&screen_manager]() {
-        screen_manager->run_screen();
+    std::thread dispatcher_thread([&dispatcher]() {
+        dispatcher.read();
     });
+    
+    std::vector<std::thread> producers_threads;
+    for (size_t i = 0; i < num_producers; i++) {
+        producers_threads.emplace_back([producers, i]() {
+            producers[i]->create_tasks();
+        });
+    }   
+    
+   
     for (auto& thread : producers_threads) {
         thread.join();
     }
@@ -115,6 +118,7 @@ int main(int argc, char* argv[]) {
     for (auto& thread : coeditors_threads) {
         thread.join();
     }
+    
     screen_thread.join();
    
    
