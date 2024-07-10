@@ -24,10 +24,10 @@ void Producer::create_tasks() {
     while (this->num_tasks_completed != this->num_tasks) {
         std::string task = produce();
         //std::cout << task << std::endl;
-        char* cstr = new char[task.length() + 1];
-        std::strcpy(cstr, task.c_str());
-        while (this->buffer->insert(cstr) == -1); // Keep trying to insert until successful
-        delete[] cstr;  
+        // char* cstr = new char[task.length() + 1];
+        // std::strcpy(cstr, task.c_str());
+        while (this->buffer->insert(task) == -1); // Keep trying to insert until successful
+        //delete[] cstr;  
     }
     char* done = new char[5]; // "DONE" + '\0'
     std::strcpy(done, "DONE");
